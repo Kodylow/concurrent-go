@@ -1,9 +1,10 @@
 package main
 
 import (
-    "fmt"
-	"github.com/fatih/color"
+	"fmt"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 type BarberShop struct {
@@ -67,4 +68,19 @@ func (shop *BarberShop) closeShopForDay() {
 	close(shop.BarbersDoneChan)
 
 	color.Green("Closing the barbershop for day done")
+}
+
+func (shop *BarberShop) addClient(client string) {
+	color.Green("*** %s arrives at the barbershop***", client)
+
+	if shop.Open {
+		select {
+		case shop.ClientsChan <- client:
+			color.Yellow("%s takes a seat in the waiting room", client)
+		default:
+			color.Red("Waiting room full, %s leaves", client)
+		}
+	} else {
+		color.Red("The shop is closed, so %s leaves.", client)
+	}
 }

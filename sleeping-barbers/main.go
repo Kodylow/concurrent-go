@@ -23,8 +23,9 @@
 package main
 
 import (
-    "math/rand"
+	"fmt"
 	"github.com/fatih/color"
+	"math/rand"
 	"time"
 )
 
@@ -50,7 +51,7 @@ func main() {
 	shop := BarberShop{
 		ShopCapacity:    seatingCapacity,
 		HairCutDuration: cutDuration,
-		NumberOfBarbers: 1,
+		NumberOfBarbers: 0,
 		BarbersDoneChan: doneChan,
 		ClientsChan:     clientChan,
 		Open:            true,
@@ -59,6 +60,10 @@ func main() {
 
 	// add barbers
 	shop.addBarber("Frank")
+	shop.addBarber("Steve")
+	shop.addBarber("John")
+	shop.addBarber("James")
+	shop.addBarber("Richard")
 
 	// start the barbershop as a goroutine
 	shopClosing := make(chan bool)
@@ -72,7 +77,21 @@ func main() {
 	}()
 
 	// add clients
+	i := 1
 
-	// block until the barbershop is closed
-	time.Sleep(5 * time.Second)
+	go func() {
+		for {
+			// get a random number with average arrival rate
+			randomMillis := rand.Int() % (2 * arrivalDate)
+			select {
+			case <-shopClosing:
+				return
+			case <-time.After(time.Millisecond * time.Duration(randomMillis)):
+				shop.addClient(fmt.Sprintf("Client #%d", i))
+				i++
+			}
+		}
+	}()
+
+	<-closed
 }
