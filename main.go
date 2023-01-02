@@ -2,21 +2,20 @@ package main
 
 import (
 	"fmt"
-    "sync"
+	"sync"
 )
 
 var msg string
-var wg sync.WaitGroup;
+var wg sync.WaitGroup
 
 func printMessage() {
-    defer wg.Done()
+	defer wg.Done()
 	fmt.Println(msg)
 }
 
 func updateMessage(s string) {
 	msg = s
 }
-
 
 func main() {
 
@@ -26,20 +25,20 @@ func main() {
 	// Then, write a test for all three functions in this program: updateMessage(),
 	// printMessage(), and main().
 
-    wg := sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 
-    updates := []string {
-        "Hello, universe!",
-        "Hello, cosmos!",
-        "Hello, word!",
-    }
+	updates := []string{
+		"Hello, universe!",
+		"Hello, cosmos!",
+		"Hello, word!",
+	}
 
-    wg.Add(len(updates))
+	wg.Add(len(updates))
 
-    for _, update := range updates {
-        go updateMessage(update)
-        wg.Wait()
-    }
-    
-    fmt.Println("Done!")
+	for _, update := range updates {
+		go updateMessage(update)
+		wg.Wait()
+	}
+
+	fmt.Println("Done!")
 }
